@@ -15,3 +15,8 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+
+  backend-a:
+    image: python:3.11-slim
+    command: python -m http.server 9000
+    working_dir: /tmp

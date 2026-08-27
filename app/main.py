@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import redis
+from app.gateway import forward_request
+from fastapi.responses import Response
 import os
 
 from app.redis_bucket import RedisTokenBucket
@@ -34,3 +36,9 @@ async def rate_limit_middleware(request: Request, call_next):
 @app.get("/ping")
 def ping():
     return {"status": "ok", "message": "pong"}
+
+@app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def gateway_route(path: str, request: Request):
+    body = await request.body()
+    resp = await forward_request(path, request.method, body)
+    return Response(content=resp.content, status_code=resp.status_code)
