@@ -3,6 +3,7 @@ services:
     build: .
     ports:
       - "8000:8000"
+      - "8089:8089"  # <--- Add this line to map Locust UI to your Mac
     volumes:
       - .:/app
     depends_on:
@@ -20,3 +21,19 @@ services:
     image: python:3.11-slim
     command: python -m http.server 9000
     working_dir: /tmp
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
