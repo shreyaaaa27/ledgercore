@@ -19,7 +19,7 @@ redis_client = redis.Redis(
 )
 
 # Config: 10 requests burst, refills at 2 tokens/sec
-bucket = RedisTokenBucket(redis_client, max_tokens=1000, refill_rate=500)
+bucket = RedisTokenBucket(redis_client, max_tokens=10, refill_rate=2)
 
 
 @app.middleware("http")
