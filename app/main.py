@@ -1,6 +1,6 @@
 import os
 import time
-import redis
+import redis.asyncio as redis
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -19,21 +19,21 @@ redis_client = redis.Redis(
 )
 
 # Config: 10 requests burst, refills at 2 tokens/sec
-bucket = RedisTokenBucket(redis_client, max_tokens=10, refill_rate=2)
+bucket = RedisTokenBucket(redis_client, max_tokens=1000, refill_rate=500)
 
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     client_id = request.client.host if request.client else "unknown"
-    start = time.monotonic()
+    start = time.perf_counter()
 
-    if not bucket.allow_request(client_id):
+    if not await bucket.allow_request(client_id):
         RATE_LIMITED_COUNT.inc()
         REQUEST_COUNT.labels(request.method, request.url.path, "429").inc()
         return JSONResponse(status_code=429, content={"detail": "Rate limit exceeded."})
 
     response = await call_next(request)
-    duration = time.monotonic() - start
+    duration = time.perf_counter() - start
 
     REQUEST_LATENCY.labels(request.url.path).observe(duration)
     REQUEST_COUNT.labels(request.method, request.url.path, str(response.status_code)).inc()

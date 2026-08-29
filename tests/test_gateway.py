@@ -1,15 +1,18 @@
+import pytest
 from unittest.mock import AsyncMock, patch
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from app.main import app, redis_client
 
-client = TestClient(app)
 
-
+@pytest.mark.asyncio(loop_scope="session")
 @patch("app.main.forward_request", new_callable=AsyncMock)
-def test_gateway_forwards_request(mock_forward):
-    redis_client.flushdb()
+async def test_gateway_forwards_request(mock_forward):
+    await redis_client.flushdb()
     mock_forward.return_value.content = b"hello from backend"
     mock_forward.return_value.status_code = 200
 
-    response = client.get("/api/test")
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/api/test")
+
     assert response.status_code == 200

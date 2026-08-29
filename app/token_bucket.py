@@ -1,12 +1,9 @@
+# app/token_bucket.py
 import time
 
 
 class TokenBucket:
     def __init__(self, max_tokens: int, refill_rate: float):
-        """
-        max_tokens: bucket capacity
-        refill_rate: tokens added per second
-        """
         self.max_tokens = max_tokens
         self.refill_rate = refill_rate
         self.tokens = max_tokens

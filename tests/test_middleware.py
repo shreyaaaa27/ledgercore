@@ -1,11 +1,15 @@
-from fastapi.testclient import TestClient
+import pytest
+from httpx import AsyncClient, ASGITransport
 from app.main import app, redis_client
 
-client = TestClient(app)
 
+@pytest.mark.asyncio(loop_scope="session")
+async def test_rate_limit_blocks_after_burst():
+    await redis_client.flushdb()
 
-def test_rate_limit_blocks_after_burst():
-    redis_client.flushdb()
-    responses = [client.get("/ping").status_code for _ in range(15)]
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        responses = [(await client.get("/ping")).status_code for _ in range(15)]
+
     assert 429 in responses
     assert responses.count(200) <= 10
