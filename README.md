@@ -1,6 +1,19 @@
 # LedgerCore
-A distributed rate limiter and API gateway built with FastAPI, Redis, and Lua — 
-featuring atomic token-bucket rate limiting, circuit breaking, and full observability.
+
+[![Render Status](https://img.shields.io/badge/Render-Live-brightgreen?logo=render&style=flat-square)](https://ledgercore-api-g79m.onrender.com/docs)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&style=flat-square)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&style=flat-square)](https://fastapi.tiangolo.com/)
+[![Redis](https://img.shields.io/badge/Redis-Token_Bucket-DC382D?logo=redis&style=flat-square)](https://redis.io/)
+
+A distributed rate limiter and API gateway built with FastAPI, Redis, and Lua — featuring atomic token-bucket rate limiting, circuit breaking, and full observability.
+
+## 🚀 Live Deployment
+
+- **Interactive API Docs (Swagger):** [https://ledgercore-api-g79m.onrender.com/docs](https://ledgercore-api-g79m.onrender.com/docs)
+- **Health Ping Endpoint:** [https://ledgercore-api-g79m.onrender.com/ping](https://ledgercore-api-g79m.onrender.com/ping)
+- **Prometheus Metrics:** [https://ledgercore-api-g79m.onrender.com/metrics](https://ledgercore-api-g79m.onrender.com/metrics)
+
+---
 
 ## Architecture
 [Client] → [FastAPI Gateway: rate limiter → circuit breaker → routing] → [Backend service]
